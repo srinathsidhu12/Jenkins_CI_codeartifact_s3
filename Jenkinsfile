@@ -55,8 +55,6 @@ cat > ~/.m2/settings.xml <<EOF
   </mirrors>
 </settings>
 EOF
-
-xmllint ~/.m2/settings.xml
 '''
   }
 }
