@@ -22,8 +22,8 @@ pipeline {
             steps {
                 sh'''
                 export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token \
-                 --domain app-domain \
-                 --domain-owner ACCOUNT_ID \
+                 --domain $CODEARTIFACT_DOMAIN \
+                 --domain-owner $ACCOUNT_ID \
                  --query authorizationToken \
                  --output text)
                '''
@@ -35,7 +35,7 @@ pipeline {
                 //Maven must know which settings file to use(contains how to authenticate with codeartifact.
                 //Fetch dependencies + build JAR
                 sh '''
-                 mvn clean package' /
+                 mvn clean package \
                 -s /var/lib/jenkins/.m2/settings.xml
                 '''
             }
