@@ -28,11 +28,8 @@ pipeline {
             steps {
                 //Allow Maven to fetch dependencies securely
                 sh '''
-                aws codeartifact login \
-                  --tool maven \
-                  --domain $CODEARTIFACT_DOMAIN \
-                  --repository $CODEARTIFACT_REPO \
-                  --region $AWS_REGION
+                export PATH=/usr/local/bin:$PATH
+                aws codeartifact login --tool maven --domain $CODEARTIFACT_DOMAIN --repository $CODEARTIFACT_REPO --region $AWS_REGION
                 '''
             }
         }
