@@ -31,14 +31,14 @@ pipeline {
         stage('Authenticate to CodeArtifact') {
             steps {
                 //Fetches auth token
-                sh '''
-                /usr/bin/aws aws codeartifact login \
+                sh """
+                /usr/local/aws-cli/v2/current/bin/aws codeartifact login \
                  --tool maven \
-                 --domain app-domain \
-                 --domain-owner 654654304213 \
-                 --repository sample_spring_boot_app_repo \
-                 --region ap-south-1
-                '''
+                 --domain $CODEARTIFACT_DOMAIN \
+                 --domain-owner $ACCOUNT_ID \
+                 --repository $CODEARTIFACT_REPO \
+                 --region $AWS_REGION
+                """
            }
         }
 
