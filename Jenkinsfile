@@ -42,35 +42,31 @@ pipeline {
           }
         }
         stage('Create Maven settings.xml') {
-            steps {
-                sh '''
-                mkdir -p ~/.m2
-                cat > ~/.m2/settings.xml <<EOF
-<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
-                      https://maven.apache.org/xsd/settings-1.0.0.xsd">
+           steps {
+               sh '''
+               mkdir -p ~/.m2
 
- <servers>
-  <server>
-    <id>app-domain-sample_spring_boot_app_repo</id>
-    <username>aws</username>
-    <password>${env.CODEARTIFACT_AUTH_TOKEN}</password>
-  </server>
- </servers>
- <mirrors>
-  <mirror>
-    <id>app-domain-sample_spring_boot_app_repo</id>
-    <name>app-domain-sample_spring_boot_app_repo</name>
-    <url>https://app-domain-654654304213.d.codeartifact.ap-south-1.amazonaws.com/maven/sample_spring_boot_app_repo/</url>
-    <mirrorOf>*</mirrorOf>
-  </mirror>
- </mirrors>
-</settings>
-EOF
-             '''
+               cat > ~/.m2/settings.xml <<EOF
+        <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
+          <servers>
+            <server>
+              <id>app-domain-sample_spring_boot_app_repo</id>
+              <username>aws</username>
+              <password>$CODEARTIFACT_AUTH_TOKEN</password>
+            </server>
+          </servers>
+          <mirrors>
+            <mirror>
+             <id>app-domain-sample_spring_boot_app_repo</id>
+             <url>https://app-domain-654654304213.d.codeartifact.ap-south-1.amazonaws.com/maven/sample_spring_boot_app_repo/</url>
+             <mirrorOf>*</mirrorOf>
+            </mirror>
+          </mirrors>
+        </settings>
+        EOF
+                '''
           }
-       }
+        }  
         stage('Build Application') {
             steps {
                 //Fetch dependencies + build JAR
