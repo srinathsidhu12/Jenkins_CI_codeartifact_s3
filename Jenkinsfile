@@ -23,25 +23,55 @@ pipeline {
                sh 'which aws && aws --version && echo $PATH'
            }
         }         
-        stage('Authenticate to CodeArtifact') {
+        stage('Fetch CodeArtifact Token') {
             steps {
-                //Fetches auth token
-                sh """
-                export PATH=/usr/local/aws-cli/v2/current/bin:$PATH
-                aws codeartifact login \
-                 --tool maven \
-                 --domain $CODEARTIFACT_DOMAIN \
-                 --domain-owner $ACCOUNT_ID \
-                 --repository $CODEARTIFACT_REPO \
-                 --region $AWS_REGION
-                """
-           }
+                sh '''
+                export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token \
+                  --domain $CODEARTIFACT_DOMAIN \
+                  --domain-owner $ACCOUNT_ID \
+                  --region $AWS_REGION \
+                  --query authorizationToken \
+                  --output text)
+
+                echo "Token fetched successfully"
+                '''
+            }
         }
 
+        stage('Create Maven settings.xml') {
+            steps {
+                sh '''
+                mkdir -p ~/.m2
+                cat > ~/.m2/settings.xml <<EOF
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                      https://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+ <servers>
+  <server>
+    <id>app-domain-sample_spring_boot_app_repo</id>
+    <username>aws</username>
+    <password>${env.CODEARTIFACT_AUTH_TOKEN}</password>
+  </server>
+ </servers>
+ <mirrors>
+  <mirror>
+    <id>app-domain-sample_spring_boot_app_repo</id>
+    <name>app-domain-sample_spring_boot_app_repo</name>
+    <url>https://app-domain-654654304213.d.codeartifact.ap-south-1.amazonaws.com/maven/sample_spring_boot_app_repo/</url>
+    <mirrorOf>*</mirrorOf>
+  </mirror>
+ </mirrors>
+</settings>
+EOF
+             '''
+          }
+       }
         stage('Build Application') {
             steps {
                 //Fetch dependencies + build JAR
-                sh 'mvn clean package -s /var/lib/jenkins/.m2/settings.xml'
+                sh 'mvn clean package -s ~/.m2/settings.xml'
             }
         }
 
