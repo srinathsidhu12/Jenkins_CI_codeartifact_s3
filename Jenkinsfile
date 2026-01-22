@@ -24,20 +24,23 @@ pipeline {
            }
         }         
         stage('Fetch CodeArtifact Token') {
-            steps {
-                sh '''
-                export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token \
-                  --domain $CODEARTIFACT_DOMAIN \
-                  --domain-owner $ACCOUNT_ID \
-                  --region $AWS_REGION \
+           steps {
+             script {
+               env.CODEARTIFACT_AUTH_TOKEN = sh(
+                script: """
+                aws codeartifact get-authorization-token \
+                  --domain ${CODEARTIFACT_DOMAIN} \
+                  --domain-owner ${ACCOUNT_ID} \
+                  --region ${AWS_REGION} \
                   --query authorizationToken \
-                  --output text)
-
-                echo "Token fetched successfully"
-                '''
+                  --output text
+                """,
+                returnStdout: true
+              ).trim()
             }
+            echo "Token fetched successfully"
+          }
         }
-
         stage('Create Maven settings.xml') {
             steps {
                 sh '''
