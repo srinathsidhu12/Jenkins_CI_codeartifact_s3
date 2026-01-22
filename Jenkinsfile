@@ -23,39 +23,45 @@ pipeline {
                sh 'which aws && aws --version && echo $PATH'
            }
         }         
-        stage('Configuring Maven for codeartifact/Create Maven settings.xml') {
-           steps {
-               sh '''
-        mkdir -p ~/.m2
-        
-        export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token \
-         --domain app-domain \
-         --domain-owner 654654304213 \
-         --region ap-south-1 \
-         --query authorizationToken \
-         --output text)
+        stage('Configuring Maven for CodeArtifact') {
+  steps {
+    sh '''#!/bin/bash
+set -e
 
-        cat > ~/.m2/settings.xml <<EOF
-        <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
-          <servers>
-            <server>
-              <id>app-domain-sample_spring_boot_app_repo</id>
-              <username>aws</username>
-              <password>$CODEARTIFACT_AUTH_TOKEN</password>
-            </server>
-          </servers>
-          <mirrors>
-            <mirror>
-             <id>app-domain-sample_spring_boot_app_repo</id>
-             <url>https://app-domain-654654304213.d.codeartifact.ap-south-1.amazonaws.com/maven/sample_spring_boot_app_repo/</url>
-             <mirrorOf>*</mirrorOf>
-            </mirror>
-          </mirrors>
-        </settings>
-        EOF
-                '''
-          }
-        }  
+mkdir -p ~/.m2
+
+export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token \
+  --domain app-domain \
+  --domain-owner 654654304213 \
+  --region ap-south-1 \
+  --query authorizationToken \
+  --output text)
+
+cat > ~/.m2/settings.xml <<EOF
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
+  <servers>
+    <server>
+      <id>app-domain-sample_spring_boot_app_repo</id>
+      <username>aws</username>
+      <password>${CODEARTIFACT_AUTH_TOKEN}</password>
+    </server>
+  </servers>
+  <mirrors>
+    <mirror>
+      <id>app-domain-sample_spring_boot_app_repo</id>
+      <url>https://app-domain-654654304213.d.codeartifact.ap-south-1.amazonaws.com/maven/sample_spring_boot_app_repo/</url>
+      <mirrorOf>*</mirrorOf>
+    </mirror>
+  </mirrors>
+</settings>
+EOF
+
+xmllint ~/.m2/settings.xml
+'''
+  }
+}
+
+ 
         stage('Build Application') {
             steps {
                 //Fetch dependencies + build JAR
