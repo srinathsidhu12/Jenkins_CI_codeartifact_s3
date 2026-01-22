@@ -18,26 +18,24 @@ pipeline {
                     url: 'https://github.com/srinathsidhu12/Jenkins_CI_codeartifact_s3.git'
             }
         }
-        stage('Get CodeArtifact Token') {
+        stage('Authenticate to CodeArtifact') {
             steps {
-                sh'''
-                export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token \
-                 --domain $CODEARTIFACT_DOMAIN \
-                 --domain-owner $ACCOUNT_ID \
-                 --query authorizationToken \
-                 --output text)
-               '''
-            }
+                //Fetches auth token
+                sh '''
+                aws codeartifact login \
+                 --tool maven \
+                 --domain app-domain \
+                 --domain-owner 654654304213 \
+                 --repository sample_spring_boot_app_repo \
+                 --region ap-south-1
+                '''
+           }
         }
 
         stage('Build Application') {
             steps {
-                //Maven must know which settings file to use(contains how to authenticate with codeartifact.
                 //Fetch dependencies + build JAR
-                sh '''
-                 mvn clean package \
-                -s /var/lib/jenkins/.m2/settings.xml
-                '''
+                sh 'mvn clean package'
             }
         }
 
