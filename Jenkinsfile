@@ -14,7 +14,7 @@ pipeline {
         stage('Checkout Source Code') {
             steps {
                 //Fetch application code
-                git branch: 'main',
+                git branch: 'master',
                     url: 'https://github.com/srinathsidhu12/Jenkins_CI_codeartifact_s3.git'
             }
         }
