@@ -20,17 +20,15 @@ pipeline {
         }
         stage('Debug AWS CLI') {
            steps {
-               sh '''
-               which aws
-               aws --version
-               '''
+               sh 'which aws && aws --version && echo $PATH'
            }
         }         
         stage('Authenticate to CodeArtifact') {
             steps {
                 //Fetches auth token
                 sh """
-                /usr/local/aws-cli/v2/current/bin/aws codeartifact login \
+                export PATH=/usr/local/aws-cli/v2/current/bin:$PATH
+                aws codeartifact login \
                  --tool maven \
                  --domain $CODEARTIFACT_DOMAIN \
                  --domain-owner $ACCOUNT_ID \
@@ -43,7 +41,7 @@ pipeline {
         stage('Build Application') {
             steps {
                 //Fetch dependencies + build JAR
-                sh 'mvn clean package'
+                sh 'mvn clean package -s /var/lib/jenkins/.m2/settings.xml'
             }
         }
 
