@@ -18,11 +18,21 @@ pipeline {
                     url: 'https://github.com/srinathsidhu12/Jenkins_CI_codeartifact_s3.git'
             }
         }
+        stage('Debug AWS CLI') {
+           steps {
+               sh '''
+               which aws
+               aws --version
+              /usr/local/bin/aws --version
+              /usr/local/bin/aws codeartifact login --help
+              '''
+           }
+        }         
         stage('Authenticate to CodeArtifact') {
             steps {
                 //Fetches auth token
                 sh '''
-                aws codeartifact login \
+                /usr/local/bin/aws aws codeartifact login \
                  --tool maven \
                  --domain app-domain \
                  --domain-owner 654654304213 \
