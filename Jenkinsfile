@@ -44,9 +44,9 @@ pipeline {
         stage('Create Maven settings.xml') {
            steps {
                sh '''
-               mkdir -p ~/.m2
+        mkdir -p ~/.m2
 
-               cat > ~/.m2/settings.xml <<EOF
+        cat > ~/.m2/settings.xml <<EOF
         <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
           <servers>
             <server>
