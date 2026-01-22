@@ -23,28 +23,17 @@ pipeline {
                sh 'which aws && aws --version && echo $PATH'
            }
         }         
-        stage('Fetch CodeArtifact Token') {
-           steps {
-             script {
-               env.CODEARTIFACT_AUTH_TOKEN = sh(
-                script: """
-                aws codeartifact get-authorization-token \
-                  --domain ${CODEARTIFACT_DOMAIN} \
-                  --domain-owner ${ACCOUNT_ID} \
-                  --region ${AWS_REGION} \
-                  --query authorizationToken \
-                  --output text
-                """,
-                returnStdout: true
-              ).trim()
-            }
-            echo "Token fetched successfully"
-          }
-        }
-        stage('Create Maven settings.xml') {
+        stage('Configuring Maven for codeartifact/Create Maven settings.xml') {
            steps {
                sh '''
         mkdir -p ~/.m2
+        
+        export CODEARTIFACT_AUTH_TOKEN=$(aws codeartifact get-authorization-token \
+         --domain app-domain \
+         --domain-owner 654654304213 \
+         --region ap-south-1 \
+         --query authorizationToken \
+         --output text)
 
         cat > ~/.m2/settings.xml <<EOF
         <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
