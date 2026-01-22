@@ -18,7 +18,12 @@ pipeline {
                     url: 'https://github.com/srinathsidhu12/Jenkins_CI_codeartifact_s3.git'
             }
         }
-
+        stage('Check AWS CLI') {
+            steps {
+                sh 'which aws'
+                sh 'aws --version'
+            }
+        }
         stage('Authenticate to CodeArtifact') {
             steps {
                 //Allow Maven to fetch dependencies securely
