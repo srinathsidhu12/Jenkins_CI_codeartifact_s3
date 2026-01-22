@@ -23,8 +23,8 @@ pipeline {
                sh '''
                which aws
                aws --version
-              /usr/local/bin/aws --version
-              /usr/local/bin/aws codeartifact login --help
+              /usr/bin/aws --version
+              /usr/bin/aws codeartifact login --help
               '''
            }
         }         
@@ -32,7 +32,7 @@ pipeline {
             steps {
                 //Fetches auth token
                 sh '''
-                /usr/local/bin/aws aws codeartifact login \
+                /usr/bin/aws aws codeartifact login \
                  --tool maven \
                  --domain app-domain \
                  --domain-owner 654654304213 \
