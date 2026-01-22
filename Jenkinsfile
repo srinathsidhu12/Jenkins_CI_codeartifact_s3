@@ -22,10 +22,8 @@ pipeline {
            steps {
                sh '''
                which aws
-               aws --version
-              /usr/bin/aws --version
-              /usr/bin/aws codeartifact login --help
-              '''
+               aws --versio
+               '''
            }
         }         
         stage('Authenticate to CodeArtifact') {
