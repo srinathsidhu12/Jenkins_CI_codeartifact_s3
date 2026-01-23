@@ -17,11 +17,6 @@ pipeline {
                 git branch: 'master',
                     url: 'https://github.com/srinathsidhu12/Jenkins_CI_codeartifact_s3.git'
             }
-        }
-        stage('Debug AWS CLI') {
-           steps {
-               sh 'which aws && aws --version && echo $PATH'
-           }
         }         
         stage('Configuring Maven for CodeArtifact') {
   steps {
