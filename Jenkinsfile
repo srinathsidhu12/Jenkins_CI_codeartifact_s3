@@ -18,7 +18,7 @@ pipeline {
                     url: 'https://github.com/srinathsidhu12/Jenkins_CI_codeartifact_s3.git'
             }
         }         
-        stage('Configuring Maven for CodeArtifact') {
+        stage('Configuring Maven for CodeArtifact....') {
   steps {
     sh '''#!/bin/bash
 set -e
@@ -52,9 +52,7 @@ cat > ~/.m2/settings.xml <<EOF
 EOF
 '''
   }
-}
-
- 
+} 
         stage('Build Application') {
             steps {
                 //Fetch dependencies + build JAR
